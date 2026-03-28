@@ -1,0 +1,98 @@
+name: email-triage-env
+version: "1.0.0"
+description: Real-world email triage environment for training RL agents to manage emails like human assistants
+author: Your Name
+license: MIT
+
+# OpenEnv specification
+type: environment
+sdk: docker
+
+# Environment configuration
+settings:
+  workers: 2
+  max_concurrent_envs: 50
+  timeout: 30
+
+# Action space definition
+action_space:
+  type: structured
+  schema:
+    category:
+      type: string
+      enum: ["urgent", "important", "normal", "spam"]
+      description: Email category classification
+    priority:
+      type: integer
+      minimum: 1
+      maximum: 5
+      description: Priority level (1=highest, 5=lowest)
+    action:
+      type: string
+      enum: ["reply", "archive", "delegate", "flag", "delete"]
+      description: Action to take on the email
+    response_text:
+      type: string
+      description: Required if action is "reply"
+
+# Observation space
+observation_space:
+  type: structured
+  schema:
+    current_email:
+      type: object
+      properties:
+        email_id: string
+        sender: string
+        subject: string
+        body: string
+        timestamp: string
+    task_description: string
+    task_difficulty: string
+    previous_decisions: array
+
+# Task definitions
+tasks:
+  easy:
+    description: Clear urgent production issue requiring immediate response
+    expected_category: urgent
+    expected_priority: 1
+    expected_action: reply
+    max_score: 1.0
+    
+  medium:
+    description: Client follow-up requiring thoughtful response and judgment
+    expected_category: important
+    expected_priority: 3
+    expected_action: reply
+    max_score: 1.0
+    
+  hard:
+    description: Complex multi-email thread requiring context understanding and urgency assessment
+    expected_category: urgent
+    expected_priority: 1
+    expected_action: reply
+    max_score: 1.0
+
+# Reward configuration
+reward:
+  weights:
+    category: 0.35
+    priority: 0.30
+    action: 0.25
+    response: 0.10
+  description: "Multi-component reward with partial credit for correct decisions"
+
+# Hardware requirements
+hardware:
+  recommended: "cpu-basic"
+  min_memory: "2GB"
+  
+# Metadata
+tags:
+  - email
+  - triage
+  - real-world
+  - productivity
+  - rl
+  - openenv

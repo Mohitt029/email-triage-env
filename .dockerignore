@@ -1,0 +1,57 @@
+# Create .dockerignore
+@'
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# Virtual Environment
+venv
+env
+ENV
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Test files
+test_*.py
+debug_*.py
+*_test.py
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+
+# Large files
+*.zip
+*.tar.gz
+*.whl
+
+# But keep these
+!server/
+!models.py
+!client.py
+!inference.py
+!openenv.yaml
+!README.md
+!requirements.txt
+'@ | Out-File -FilePath .dockerignore -Encoding UTF8
