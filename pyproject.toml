@@ -23,7 +23,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/Mohitt029/email-triage-env"
-"HF Space" = "https://huggingface.co/spaces/MohitS029/email-triage-env1"
+HF-Space = "https://huggingface.co/spaces/MohitS029/email-triage-env1"
 
 [tool.openenv]
 sdk = "docker"
