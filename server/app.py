@@ -279,3 +279,14 @@ async def select_task(difficulty: str, session_id: str = Query(...)):
         "time_limit": env.current_task.time_limit,
         "confidential": env.current_task.email.confidential
     }
+
+
+
+def main():
+    """Entry point for the application"""
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+
+if __name__ == "__main__":
+    main()
