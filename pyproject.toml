@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.scripts]
-email-triage-env = "server.app:main"
+server = "server.app:main"
 
 [project.urls]
 Homepage = "https://github.com/Mohitt029/email-triage-env"
