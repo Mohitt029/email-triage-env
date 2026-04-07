@@ -78,7 +78,7 @@ def run_task(task_name: str, agent: BaselineAgent, space_url: str) -> Dict[str, 
     
     print(f"[START] task={task_name}", flush=True)
     
-    # Create a completely new environment for each attempt
+    
     for attempt in range(3):
         env = None
         try:
@@ -126,12 +126,12 @@ def main():
         results.append(run_task(task, agent, args.url))
         time.sleep(1)
     
-    # Reorder results for output
+    
     scores_dict = {}
     for r in results:
         scores_dict[r["task"]] = r["score"]
     
-    # Ensure all three tasks have scores
+    
     scores = {
         "easy": scores_dict.get("easy", 0.0),
         "medium": scores_dict.get("medium", 0.0),
