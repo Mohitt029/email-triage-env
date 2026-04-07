@@ -22,7 +22,10 @@ class EmailTriageEnvironment:
         self.episode_start_time = None
         
     def reset(self) -> EmailTriageObservation:
-        self.current_difficulty = "easy"
+        # FIX: Use the current difficulty if set, otherwise default to easy
+        if self.current_difficulty is None:
+            self.current_difficulty = "easy"
+        
         self.current_task = self.tasks[self.current_difficulty]
         self.episode_id = str(uuid.uuid4())
         self.step_count = 0
@@ -148,8 +151,9 @@ class EmailTriageEnvironment:
         )
     
     def set_task_difficulty(self, difficulty: str):
+        """Set the task difficulty for the NEXT reset"""
         if difficulty in self.tasks:
             self.current_difficulty = difficulty
-            self.current_task = self.tasks[difficulty]
+            # Note: Don't change current_task here - let reset() handle it
         else:
             raise ValueError(f"Unknown difficulty: {difficulty}. Options: {list(self.tasks.keys())}")

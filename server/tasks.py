@@ -20,11 +20,9 @@ class EmailTask:
               confidence: float = 1.0) -> Tuple[float, Dict[str, float]]:
         scores = {}
         
-        # Category - 30%
         category_score = 1.0 if category == self.correct_category else 0.0
         scores['category'] = category_score
         
-        # Priority - 25%
         priority_diff = abs(priority - self.correct_priority)
         if priority_diff == 0:
             priority_score = 1.0
@@ -36,11 +34,9 @@ class EmailTask:
             priority_score = 0.1
         scores['priority'] = priority_score
         
-        # Action - 20%
         action_score = 1.0 if action == self.correct_action else 0.0
         scores['action'] = action_score
         
-        # Response - 15%
         response_score = 0.0
         if action == "reply":
             if response:
@@ -51,7 +47,6 @@ class EmailTask:
             response_score = 1.0
         scores['response'] = response_score
         
-        # Time penalty - up to -15%
         time_penalty = 0.0
         if time_taken > 0:
             if time_taken > self.time_limit:
@@ -60,13 +55,11 @@ class EmailTask:
                 time_penalty = -0.15 * (time_taken / self.time_limit)
         scores['time_penalty'] = time_penalty
         
-        # Confidence bonus - up to +10%
         confidence_bonus = 0.0
         if category_score == 1.0 and priority_score >= 0.7 and action_score == 1.0:
             confidence_bonus = confidence * 0.10
         scores['confidence_bonus'] = confidence_bonus
         
-        # Improvement bonus - up to +5%
         improvement_bonus = 0.0
         if self.previous_score is not None:
             improvement = self.previous_score - (category_score * 0.3 + priority_score * 0.25 + 
@@ -90,23 +83,27 @@ class EmailTask:
 
 
 def create_easy_task() -> EmailTask:
+    """EASY: Production server down - Critical, needs immediate action"""
     email = Email(
         email_id="easy_001",
-        sender="urgent@support.com",
-        subject="URGENT: Server Down - Production Impact",
+        sender="alerts@monitoring.com",
+        subject="[CRITICAL] Production Server Down - Immediate Action Required",
         body="""
-        Hi Team,
-        
-        Our main production server is down. Customers are unable to access 
-        the application. This is a critical issue that needs immediate attention.
-        
-        Please investigate ASAP.
-        
-        - Support Team
-        """,
-        timestamp=datetime.now() - timedelta(hours=1),
+ALERT: Production server api-01.prod.internal is DOWN.
+
+Impact: Customer transactions failing (503 errors increasing)
+Duration: 12 minutes
+Priority: P0 - Critical
+
+Please investigate and resolve immediately.
+
+- Incident ID: INC-2024-042
+- Affected Services: payment-api, checkout-service
+""",
+        timestamp=datetime.now() - timedelta(minutes=12),
         deadline=datetime.now() + timedelta(minutes=30),
-        attachments=["error_logs.txt"]
+        attachments=["error_logs.txt"],
+        urgency_keywords=["critical", "down", "immediate", "p0"]
     )
     
     return EmailTask(
@@ -115,28 +112,37 @@ def create_easy_task() -> EmailTask:
         correct_priority=1,
         correct_action="reply",
         difficulty="easy",
-        description="Clear urgent production issue requiring immediate response (30 min deadline)",
+        description="Production server is down - immediate response required (30 min deadline)",
         time_limit=120
     )
 
+
 def create_medium_task() -> EmailTask:
+    """MEDIUM: Client follow-up - Important but not urgent, needs professional response"""
     email = Email(
         email_id="medium_001",
-        sender="client@company.com",
-        subject="Question about our recent meeting",
+        sender="sarah.johnson@clientcorp.com",
+        subject="Q4 Marketing Campaign - Timeline Confirmation",
         body="""
-        Hi,
-        
-        Following up on our meeting yesterday about the Q3 deliverables.
-        I wanted to confirm if we're still on track for the end of month?
-        Also, could you send over the updated timeline when you get a chance?
-        
-        Thanks,
-        Client
-        """,
+Hi Team,
+
+Following up on our call last week about the Q4 marketing campaign.
+
+Could you please share the updated timeline for the social media deliverables?
+We need to align this with our product launch on Dec 15th.
+
+Also, can you confirm if the creative assets will be ready by Nov 30th?
+
+Not super urgent, but would appreciate an update by Friday.
+
+Best regards,
+Sarah Johnson
+Marketing Director, ClientCorp
+""",
         timestamp=datetime.now() - timedelta(days=2),
-        deadline=datetime.now() + timedelta(days=1),
-        cc=["manager@company.com"]
+        deadline=datetime.now() + timedelta(days=3),
+        cc=["projectmanager@company.com"],
+        urgency_keywords=["timeline", "deliverables", "by friday"]
     )
     
     return EmailTask(
@@ -145,49 +151,58 @@ def create_medium_task() -> EmailTask:
         correct_priority=3,
         correct_action="reply",
         difficulty="medium",
-        description="Client follow-up requiring thoughtful response (24 hour deadline)",
+        description="Client follow-up on campaign timeline - respond within 3 days",
         time_limit=300
     )
 
+
 def create_hard_task() -> EmailTask:
+    """HARD: Board meeting in 2 hours - Urgent, confidential, requires analysis"""
     thread_history = [
         Email(
             email_id="thread_001",
-            sender="manager@company.com",
-            subject="RE: Q4 Budget Review - Urgent",
-            body="We need the Q4 budget numbers by EOD today for the board meeting.",
-            timestamp=datetime.now() - timedelta(days=1)
+            sender="finance@company.com",
+            subject="Q4 Financial Review - Draft Numbers",
+            body="Attached are the preliminary Q4 numbers. Revenue down 12% due to market conditions.",
+            timestamp=datetime.now() - timedelta(days=3),
+            attachments=["q4_draft.xlsx"]
         ),
         Email(
-            email_id="thread_002", 
-            sender="finance@company.com",
-            subject="RE: Q4 Budget Review - Urgent",
-            body="Waiting on numbers from sales. Will send as soon as I get them.",
-            timestamp=datetime.now() - timedelta(hours=12)
+            email_id="thread_002",
+            sender="legal@company.com",
+            subject="Disclosure Requirements - Board Meeting",
+            body="Legal review confirms we must disclose the 12% revenue decline at the board meeting.",
+            timestamp=datetime.now() - timedelta(days=2),
+            confidential=True
         )
     ]
     
     current_email = Email(
         email_id="hard_001",
-        sender="ceo@company.com",
-        subject="RE: Q4 Budget Review - CRITICAL - Board in 2 Hours",
+        sender="board@company.com",
+        subject="URGENT: Board Meeting in 2 Hours - Final Numbers Required",
         body="""
-        Team,
-        
-        The board meeting is in 2 hours and we still don't have the budget numbers.
-        Legal says we must disclose the 15% decline today.
-        
-        I need updated numbers from sales and your analysis.
-        
-        This is confidential.
-        """,
-        timestamp=datetime.now() - timedelta(hours=2),
-        thread_id="budget_thread",
+CONFIDENTIAL - For internal use only
+
+Board meeting starts at 2 PM. We need:
+1. Final Q4 numbers with analysis
+2. Action plan for revenue recovery
+3. Legal disclosure statement
+
+The board expects a detailed presentation.
+
+Please prepare immediately. This is time-sensitive.
+
+- Board Secretary
+""",
+        timestamp=datetime.now() - timedelta(hours=1),
+        thread_id="q4_review",
         previous_emails=thread_history,
-        deadline=datetime.now() + timedelta(minutes=120),
+        deadline=datetime.now() + timedelta(hours=2),
         confidential=True,
-        attachments=["q4_preliminary.pdf", "legal_memo_2024.pdf"],
-        cc=["board@company.com", "legal@company.com"]
+        attachments=["board_presentation_template.pptx", "q3_comparison.pdf"],
+        cc=["ceo@company.com", "cfo@company.com"],
+        urgency_keywords=["urgent", "board", "confidential", "2 hours"]
     )
     
     return EmailTask(
@@ -196,9 +211,10 @@ def create_hard_task() -> EmailTask:
         correct_priority=1,
         correct_action="reply",
         difficulty="hard",
-        description="Complex multi-email thread with confidentiality and 2-hour board deadline",
+        description="Board meeting in 2 hours - urgent response with confidential analysis",
         time_limit=600
     )
+
 
 def get_all_tasks() -> Dict[str, EmailTask]:
     return {
