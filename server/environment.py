@@ -154,6 +154,6 @@ class EmailTriageEnvironment:
         """Set the task difficulty for the NEXT reset"""
         if difficulty in self.tasks:
             self.current_difficulty = difficulty
-            # Note: Don't change current_task here - let reset() handle it
+            
         else:
             raise ValueError(f"Unknown difficulty: {difficulty}. Options: {list(self.tasks.keys())}")
